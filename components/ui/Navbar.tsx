@@ -1,6 +1,6 @@
 import { AppBar, IconButton, Toolbar, Typography } from "@mui/material";
 import MenuOpenOutlinedIcon from "@mui/icons-material/MenuOutlined";
-import useUi from "../../hooks/useUI";
+import { useUi } from "../../hooks";
 
 export const Navbar = () => {
   const { openSideMenu } = useUi();

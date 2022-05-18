@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { Box } from "@mui/system";
 import { InboxOutlined, MailOutline } from "@mui/icons-material";
-import useUi from "../../hooks/useUI";
+import { useUi } from "../../hooks";
 
 const menuItems = ["Inbox", "Starred", "Send Email"];
 

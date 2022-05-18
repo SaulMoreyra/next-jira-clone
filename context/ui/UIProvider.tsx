@@ -3,10 +3,14 @@ import { UIContext, UIReducer } from "./";
 
 export interface UIState {
   sidemenu: boolean;
+  isAddingEntry: boolean;
+  isDraggin: boolean;
 }
 
 const UI_INITIAL_STATE: UIState = {
   sidemenu: false,
+  isAddingEntry: false,
+  isDraggin: false,
 };
 
 const UIProvider: FC<{
@@ -24,8 +28,28 @@ const UIProvider: FC<{
     []
   );
 
+  const setIsAddingEntry = (isAdding: boolean) => {
+    dispatch({ type: "@UI/ADDING/ENTRY", payload: isAdding });
+  };
+
+  const startDraggin = () => {
+    dispatch({ type: "@UI/START/DRAGGIN" });
+  };
+  const endDraggin = () => {
+    dispatch({ type: "@UI/END/DRAGGIN" });
+  };
+
   return (
-    <UIContext.Provider value={{ ...state, openSideMenu, closeSideMenu }}>
+    <UIContext.Provider
+      value={{
+        ...state,
+        openSideMenu,
+        closeSideMenu,
+        setIsAddingEntry,
+        startDraggin,
+        endDraggin,
+      }}
+    >
       {children}
     </UIContext.Provider>
   );
