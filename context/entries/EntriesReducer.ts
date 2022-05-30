@@ -3,13 +3,16 @@ import { EntriesState } from "./";
 
 type EntriesActionType =
   | { type: "@ENTRY/ADD"; payload: Entry }
-  | { type: "@ENTRY/UPDATE"; payload: Entry };
+  | { type: "@ENTRY/UPDATE"; payload: Entry }
+  | { type: "@ENTRY/INITIAL"; payload: Entry[] };
 
 const EntriesReducer = (
   state: EntriesState,
   action: EntriesActionType
 ): EntriesState => {
   switch (action.type) {
+    case "@ENTRY/INITIAL":
+      return { ...state, entries: [...action.payload] };
     case "@ENTRY/ADD":
       return { ...state, entries: [...state.entries, action.payload] };
     case "@ENTRY/UPDATE":

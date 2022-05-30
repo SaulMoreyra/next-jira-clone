@@ -1,6 +1,7 @@
-import { FC, ReactNode, useReducer } from "react";
-import { v4 as uuidv4 } from "uuid";
+import { FC, ReactNode, useReducer, useEffect } from "react";
+import { EntriesApi } from "../../apis";
 import { Entry } from "../../interfaces";
+import { IEntry } from "../../models";
 import { EntriesContext, EntriesReducer } from "./";
 
 export interface EntriesState {
@@ -8,35 +9,7 @@ export interface EntriesState {
 }
 
 const INITIAL_STATE: EntriesState = {
-  entries: [
-    {
-      _id: uuidv4(),
-      description:
-        "Cillum ut eu qui non elit nostrud consectetur adipisicing sunt anim dolore ad voluptate do.",
-      status: "pending",
-      createtAt: Date.now(),
-    },
-    {
-      _id: uuidv4(),
-      description:
-        "Velit anim consequat labore exercitation amet reprehenderit pariatur esse ea velit ad excepteur elit tempor.",
-      status: "in-progress",
-      createtAt: Date.now(),
-    },
-    {
-      _id: uuidv4(),
-      description: "Sint quis cupidatat officia proident anim aute.",
-      status: "finished",
-      createtAt: Date.now() - 1000000,
-    },
-    {
-      _id: uuidv4(),
-      description:
-        "Ad sint consectetur veniam dolor aliquip est commodo sunt minim sit ipsum magna fugiat laboris.",
-      status: "pending",
-      createtAt: Date.now() - 100000,
-    },
-  ],
+  entries: [],
 };
 
 const EntriesProvider: FC<{
@@ -44,20 +17,38 @@ const EntriesProvider: FC<{
 }> = ({ children }) => {
   const [state, dispatch] = useReducer(EntriesReducer, INITIAL_STATE);
 
-  const addEntry = (description: string) => {
-    const newEntry: Entry = {
-      _id: uuidv4(),
-      description,
-      createtAt: Date.now(),
-      status: "pending",
-    };
-
-    dispatch({ type: "@ENTRY/ADD", payload: newEntry });
+  const addEntry = async (description: string) => {
+    try {
+      const { data } = await EntriesApi.post<Entry>("/entries", {
+        description,
+      });
+      dispatch({ type: "@ENTRY/ADD", payload: data });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  const entryUpdate = (entry: Entry) => {
-    dispatch({ type: "@ENTRY/UPDATE", payload: entry });
+  const entryUpdate = async ({ _id, description, status }: Entry) => {
+    try {
+      const { data } = await EntriesApi.put<Entry>(`/entries/${_id}`, {
+        description,
+        status,
+      });
+      dispatch({ type: "@ENTRY/UPDATE", payload: data });
+    } catch (error) {
+      console.log(error);
+    }
   };
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const refreshEntries = async () => {
+    const { data } = await EntriesApi.get<Entry[]>("/entries");
+    dispatch({ type: "@ENTRY/INITIAL", payload: data });
+  };
+
+  useEffect(() => {
+    refreshEntries();
+  }, []);
 
   return (
     <EntriesContext.Provider value={{ ...state, addEntry, entryUpdate }}>
